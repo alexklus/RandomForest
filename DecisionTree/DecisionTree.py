@@ -107,18 +107,81 @@ def determine_best_split(data, potential_splits):
     return best_split_column, best_split_value
 
 
+def decision_tree_algorithm(df, counter=0, min_sample=2, max_depth=5, ):
+    if counter == 0:
+        global COLUMN_HEADERS
+        COLUMN_HEADERS = df.columns
+        data = df.values
+
+    else:
+        data = df
+
+    if check_purity(data) or (len(data) < min_sample) or (counter == max_depth):
+        classification = classify_data(data)
+        return classification
+    else:
+
+        counter += 1
+        potential_splits = get_potential_splits(data)
+        split_column, split_value = determine_best_split(data, potential_splits)
+        data_below, data_above = split_data(data, split_column, split_value)
+
+        feature_name = COLUMN_HEADERS[split_column]
+        question = "{} <= {}".format(feature_name, split_value)
+        sub_tree = {question: []}
+
+        yes_answer = decision_tree_algorithm(data_below, counter, min_sample, max_depth)
+        no_answer = decision_tree_algorithm(data_above, counter, min_sample, max_depth)
+
+        if yes_answer == no_answer:
+            sub_tree = yes_answer
+        else:
+            sub_tree[question].append(yes_answer)
+            sub_tree[question].append(no_answer)
+
+        return sub_tree
+
+
+def classify_example(example, tree):
+    question = list(tree.keys())[0]
+    feature_name, comparison_operator, value = question.split()
+
+    if example[feature_name] <= float(value):
+        answer = tree[question][0]
+    else:
+        answer = tree[question][1]
+    if not isinstance(answer, dict):
+        return answer
+    else:
+        residual_tree = answer
+        return classify_example(example, residual_tree)
+
+
+def calculate_accuracy(df,tree):
+    df["classification"] = df.apply(classify_example,axis=1, args=(tree,))
+    df["classification_correct"] = df.classification == df.label
+    accuracy = df.classification_correct.mean()
+    return accuracy
+
 df = load_data()
 random.seed(0)
 df_train, df_test = train_test_split(df, 20)
-data = df_train.values
-potential_splits = get_potential_splits(data)
+# data = df_train.values
+# potential_splits = get_potential_splits(data)
 # sns.lmplot(data=df_train, x="petal_width", y="petal_length", hue="label", fit_reg=False, height=6, aspect=1.5)
 # plt.vlines(x=potential_splits[3], ymin=1, ymax=7)
 # plt.hlines(y=potential_splits[2], xmin=0, xmax=2.5)
 # plt.show()
-data_below, data_above = split_data(data, 3, 1.05)
+# data_below, data_above = split_data(data, 3, 1.05)
 # plotting_df = pd.DataFrame(data,columns=df.columns)
 # sns.lmplot(data=plotting_df, x="petal_width", y="petal_length", hue="label", fit_reg=False, height=6, aspect=1.5)
 # plt.vlines(x=0.8, ymin=1, ymax=7)
 # plt.show()
-print(determine_best_split(data,potential_splits))
+# print(determine_best_split(data, potential_splits))
+tree = decision_tree_algorithm(df_train, max_depth=3)
+
+acc = calculate_accuracy(df_test,tree)
+print(acc)
+print(df_test.loc[77])
+
+
