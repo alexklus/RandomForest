@@ -1,3 +1,3 @@
 import configparser
 
-print("test")
+print("test2")
