@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
-import random
-from pprint import pprint
 from DecisionTree.DecisionTree import decision_tree_algorithm, train_test_split, calculate_accuracy, \
-    decision_tree_predictions, get_potential_splits
+    decision_tree_predictions, print_tree
 
 
 def bootstrapping(train_df, n_bootstrap):
@@ -31,9 +29,15 @@ def random_forest_predictions(test_df, forest):
 
     return df_predictions
 
-df = pd.read_csv("./Data/iris.csv")
-train_df, test_df = train_test_split(df, test_size=0.2)
-forest = random_forest_algorithm(train_df, n_trees=4, n_bootstrap=80, n_features=4, df_max_depth=4)
-pred =random_forest_predictions(test_df,forest)
-print(pred)
 
+
+
+
+# df = pd.read_csv("./Data/iris.csv")
+# train_df, test_df = train_test_split(df, test_size=0.2)
+# forest = random_forest_algorithm(train_df, n_trees=4, n_bootstrap=80, n_features=4, df_max_depth=6)
+# pred = random_forest_predictions(test_df, forest)
+#
+# for i in range(len(forest)):
+#     print("Tree " + str(i+1))
+#     print_tree(forest[i])
