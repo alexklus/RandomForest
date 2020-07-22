@@ -4,17 +4,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import random
 from pprint import pprint
-import configparser
-
-cong = configparser.ConfigParser()
-cong.read('../config.ini')
-data_path = cong["Default"]["data_path"]
 
 
 def load_data():
-    df = pd.read_csv(data_path)
-    df = df.drop("Id", axis=1)
-    df = df.rename(columns={"species": "label"})
+    df = pd.read_csv("../Data/Titanic.csv")
+    # df = df.drop("Id", axis=1)
+    # df = df.rename(columns={"species": "label"})
+    df["label"] = df.Survived
+    df = df.drop(["PassengerId", "Survived", "Name", "Ticket", "Cabin"], axis=1)
+    median_age = df.Age.median()
+    mode_embarked = df.Embarked.mode()[0]
+    df = df.fillna({"Age": median_age, "Embarked": mode_embarked})
+
     return df
 
 
@@ -49,29 +50,34 @@ def classify_data(data):
     return classification
 
 
-def get_potential_splits(data):
+def get_potential_splits(data, random_subspace):
     potential_splits = {}
     _, n_columns = data.shape
+    column_indices = list(range(n_columns-1))
 
-    for column_index in range(n_columns - 1):
-        potential_splits[column_index] = []
+    if random_subspace and random_subspace <= len(column_indices):
+        column_indices = random.sample(population=column_indices, k=random_subspace)
+
+    for column_index in column_indices:  # excluding the last column which is the label
         values = data[:, column_index]
         unique_values = np.unique(values)
-        for index in range(len(unique_values)):
-            if index != 0:
-                current_value = unique_values[index]
-                previous_value = unique_values[index - 1]
-                potential_split = (current_value + previous_value) / 2
 
-                potential_splits[column_index].append(potential_split)
+        potential_splits[column_index] = unique_values
 
     return potential_splits
 
 
 def split_data(data, split_column, split_value):
     split_column_values = data[:, split_column]
-    data_below = data[split_column_values <= split_value]
-    data_above = data[split_column_values > split_value]
+    type_of_feature = FEATURE_TYPES[split_column]
+
+    if type_of_feature == "continuous":
+        data_below = data[split_column_values <= split_value]
+        data_above = data[split_column_values > split_value]
+    else:
+        data_below = data[split_column_values == split_value]
+        data_above = data[split_column_values != split_value]
+
     return data_below, data_above
 
 
@@ -107,12 +113,26 @@ def determine_best_split(data, potential_splits):
     return best_split_column, best_split_value
 
 
-def decision_tree_algorithm(df, counter=0, min_sample=2, max_depth=5, ):
-    if counter == 0:
-        global COLUMN_HEADERS
-        COLUMN_HEADERS = df.columns
-        data = df.values
+def determine_type_of_feature(df):
+    feature_types = []
+    n_unique_values_trashold = 15
+    for column in df.columns:
+        unique_values = df[column].unique()
+        example_value = unique_values[0]
 
+        if isinstance(example_value, str) or (len(unique_values) <= n_unique_values_trashold):
+            feature_types.append("categorical")
+        else:
+            feature_types.append("continuous")
+    return feature_types
+
+
+def decision_tree_algorithm(df, counter=0, min_sample=2, max_depth=5, random_subspace=None):
+    if counter == 0:
+        global COLUMN_HEADERS, FEATURE_TYPES
+        COLUMN_HEADERS = df.columns
+        FEATURE_TYPES = determine_type_of_feature(df)
+        data = df.values
     else:
         data = df
 
@@ -122,16 +142,26 @@ def decision_tree_algorithm(df, counter=0, min_sample=2, max_depth=5, ):
     else:
 
         counter += 1
-        potential_splits = get_potential_splits(data)
+        potential_splits = get_potential_splits(data, random_subspace)
+
         split_column, split_value = determine_best_split(data, potential_splits)
         data_below, data_above = split_data(data, split_column, split_value)
 
+        if (len(data_above) == 0) or (len(data_below) == 0):
+            classification = classify_data(data)
+            return classification
+
         feature_name = COLUMN_HEADERS[split_column]
-        question = "{} <= {}".format(feature_name, split_value)
+        type_of_feature = FEATURE_TYPES[split_column]
+        if type_of_feature == "continuous":
+            question = "{} <= {}".format(feature_name, split_value)
+        else:
+            question = "{} = {}".format(feature_name, split_value)
+
         sub_tree = {question: []}
 
-        yes_answer = decision_tree_algorithm(data_below, counter, min_sample, max_depth)
-        no_answer = decision_tree_algorithm(data_above, counter, min_sample, max_depth)
+        yes_answer = decision_tree_algorithm(data_below, counter, min_sample, max_depth, random_subspace)
+        no_answer = decision_tree_algorithm(data_above, counter, min_sample, max_depth, random_subspace)
 
         if yes_answer == no_answer:
             sub_tree = yes_answer
@@ -143,13 +173,23 @@ def decision_tree_algorithm(df, counter=0, min_sample=2, max_depth=5, ):
 
 
 def classify_example(example, tree):
+    if not isinstance(tree, dict):
+        return tree
+
     question = list(tree.keys())[0]
     feature_name, comparison_operator, value = question.split()
 
-    if example[feature_name] <= float(value):
-        answer = tree[question][0]
+    if comparison_operator == "<=":
+        if example[feature_name] <= float(value):
+            answer = tree[question][0]
+        else:
+            answer = tree[question][1]
     else:
-        answer = tree[question][1]
+        if str(example[feature_name]) == value:
+            answer = tree[question][0]
+        else:
+            answer = tree[question][1]
+
     if not isinstance(answer, dict):
         return answer
     else:
@@ -157,31 +197,22 @@ def classify_example(example, tree):
         return classify_example(example, residual_tree)
 
 
-def calculate_accuracy(df,tree):
-    df["classification"] = df.apply(classify_example,axis=1, args=(tree,))
-    df["classification_correct"] = df.classification == df.label
-    accuracy = df.classification_correct.mean()
+def make_predictions(df, tree):
+    if len(df) != 0:
+        predictions = df.apply(classify_example, args=(tree,), axis=1)
+    else:
+        predictions = pd.Series
+
+    return predictions
+
+
+def calculate_accuracy(df, tree):
+    predictions = make_predictions(df, tree)
+    predictions_correct = predictions == df.label
+    accuracy = predictions_correct.mean()
     return accuracy
 
-df = load_data()
-random.seed(0)
-df_train, df_test = train_test_split(df, 20)
-# data = df_train.values
-# potential_splits = get_potential_splits(data)
-# sns.lmplot(data=df_train, x="petal_width", y="petal_length", hue="label", fit_reg=False, height=6, aspect=1.5)
-# plt.vlines(x=potential_splits[3], ymin=1, ymax=7)
-# plt.hlines(y=potential_splits[2], xmin=0, xmax=2.5)
-# plt.show()
-# data_below, data_above = split_data(data, 3, 1.05)
-# plotting_df = pd.DataFrame(data,columns=df.columns)
-# sns.lmplot(data=plotting_df, x="petal_width", y="petal_length", hue="label", fit_reg=False, height=6, aspect=1.5)
-# plt.vlines(x=0.8, ymin=1, ymax=7)
-# plt.show()
-# print(determine_best_split(data, potential_splits))
-tree = decision_tree_algorithm(df_train, max_depth=3)
 
-acc = calculate_accuracy(df_test,tree)
-print(acc)
-print(df_test.loc[77])
-
-
+def decision_tree_predictions(test_df, tree):
+    predictions = test_df.apply(classify_example, args=(tree,), axis=1)
+    return predictions
