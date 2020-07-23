@@ -50,7 +50,7 @@ def classify_data(data):
 def get_potential_splits(data, random_subspace):
     potential_splits = {}
     _, n_columns = data.shape
-    column_indices = list(range(n_columns-1))
+    column_indices = list(range(n_columns - 1))
 
     if random_subspace and random_subspace <= len(column_indices):
         column_indices = random.sample(population=column_indices, k=random_subspace)
@@ -216,6 +216,9 @@ def decision_tree_predictions(test_df, tree):
 
 
 def print_tree(tree, space=""):
+    if type(tree) == int or type(tree) == float:
+        print(space + "-->" + str(tree))
+        return
     if len(tree) == 0:
         return
     else:
