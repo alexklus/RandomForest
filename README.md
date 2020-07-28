@@ -40,7 +40,7 @@ Add new data set
     [dataSetName]
     path = ./Data/"dataSetName".csv
     label = #name of the feature to classify
-    unnecessary_features = #features to drop from data set if there is no feature equal None
+    unnecessary_features = #features to drop from data set, if there is no features write None
 
     Example:
     [Titanic]
