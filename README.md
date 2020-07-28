@@ -25,5 +25,6 @@ Alex Klushnikov, Benjamin Ahr
                           n_trees=20, #number of trees in forest
                           tree_max_depth=10 #max tree depth etc max number of questions to ask
                           )
+3) run forest.test_model() to test your model
 
 ~~~
