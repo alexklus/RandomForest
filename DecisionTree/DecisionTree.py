@@ -215,20 +215,14 @@ def decision_tree_predictions(test_df, tree):
 
 
 def print_tree(tree, space=""):
-    if type(tree) == int or type(tree) == float:
-        print(space + "-->" + str(tree))
-        return
-    if len(tree) == 0:
-        return
-    else:
-        key, value = list(tree.items())[0]
+    key, value = list(tree.items())[0]
+    print(space + key + "?")
+    if type(value[0]) == str or type(value[0]) == float or type(value[0]) == int:
 
-        print(space + key + "?")
-        if type(value[0]) == str:
-            print(space + "-->" + value[0])
-        else:
-            print_tree(value[0], space + "   ")
-        if type(value[1]) == str:
-            print(space + "-->" + value[1])
-        else:
-            print_tree(value[1], space + "   ")
+        print(space + "-->" + str(value[0]))
+    else:
+        print_tree(value[0], space + "   ")
+    if type(value[1]) == str or type(value[1]) == float or type(value[1]) == int:
+        print(space + "-->" + str(value[1]))
+    else:
+        print_tree(value[1], space + "   ")

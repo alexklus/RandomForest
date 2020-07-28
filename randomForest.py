@@ -1,4 +1,5 @@
 from builtins import print
+from pprint import pprint
 
 import numpy as np
 import pandas as pd
@@ -122,7 +123,10 @@ class RandomForest:
         data.to_csv(r"result.csv")
 
     def print_forest(self):
+        i = 1
         for tree in self.forest:
-            print_tree(tree, "")
+            print("Tree " + str(i))
+            i+=1
+            print_tree(tree,"")
 
 

@@ -9,11 +9,10 @@ def make_new_prediction(file_path, forest):
 
 
 def main():
-    forest = RandomForest("Titanic", n_boostrap=800, n_features=6, test_size=0.2, n_trees=10, tree_max_depth=8)
+    forest = RandomForest("Iris", n_boostrap=20, n_features=4, test_size=0.2, n_trees=3, tree_max_depth=3)
     forest.test_model()
-    print(forest.accuracy)
     forest.print_forest()
-
+    print(forest.accuracy)
 
 if __name__ == "__main__":
     main()
