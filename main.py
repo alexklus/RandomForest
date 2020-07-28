@@ -9,11 +9,10 @@ def make_new_prediction(file_path, forest):
 
 
 def main():
-    forest = RandomForest("Ortopedic", n_boostrap=10, n_features=4, test_size=0.2, n_trees=3, tree_max_depth=3)
+    forest = RandomForest("mushrooms", n_boostrap=100, n_features=24, test_size=0.2, n_trees=20, tree_max_depth=10)
 
     forest.test_model()
-    print(forest.train_df)
-    #forest.print_forest()
+    forest.print_forest()
     #print("Forest accuracy " + str(forest.accuracy * 100) + "%")
 
 

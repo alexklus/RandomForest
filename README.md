@@ -1,8 +1,8 @@
 # RandomForest
-##Final project Machine learning course  
+## Final project Machine learning course
 Alex Klushnikov, Benjamin Ahr
 
-#שימוש 
+# שימוש
 - יש להתקין פייתון פרסה 3.6 ומעלה 
 - להעתיק את הפרוייקט על ידי הפעולה הבאה:
 ~~~
@@ -12,3 +12,4 @@ Alex Klushnikov, Benjamin Ahr
  ~~~
       pip install requirements.txt
 ~~~
+## הוראות הרצה

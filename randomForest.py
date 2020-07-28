@@ -1,12 +1,11 @@
 from builtins import print
-from pprint import pprint
 
 import numpy as np
 import pandas as pd
 import configparser
 
 from DecisionTree.DecisionTree import decision_tree_algorithm, train_test_split, calculate_accuracy, \
-    decision_tree_predictions, make_predictions,print_tree
+    decision_tree_predictions, make_predictions, print_tree
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -112,8 +111,7 @@ class RandomForest:
         if unnecessary_features[0] != "None":
             for unnecessary_feature in unnecessary_features:
                 if unnecessary_feature in data.columns:
-
-                    data = data.drop(unnecessary_feature,axis=1)
+                    data = data.drop(unnecessary_feature, axis=1)
         return data
 
     def predict_new_data(self, data):
@@ -126,7 +124,5 @@ class RandomForest:
         i = 1
         for tree in self.forest:
             print("Tree " + str(i))
-            i+=1
-            print_tree(tree,"")
-
-
+            i += 1
+            print_tree(tree, "")
