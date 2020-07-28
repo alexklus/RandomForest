@@ -12,6 +12,7 @@ def main():
     forest = RandomForest("Titanic", n_boostrap=800, n_features=6, test_size=0.2, n_trees=10, tree_max_depth=8)
     forest.test_model()
     print(forest.accuracy)
+    forest.print_forest()
 
 
 if __name__ == "__main__":
