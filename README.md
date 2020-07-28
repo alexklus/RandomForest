@@ -14,6 +14,7 @@ Alex Klushnikov, Benjamin Ahr
 ~~~
 ## הוראות הרצה:
 ~~~
-- הרץ את קובץ main.py
+- run main.py file
+
 
 ~~~
