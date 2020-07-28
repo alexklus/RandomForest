@@ -26,26 +26,26 @@ Alex Klushnikov, Benjamin Ahr
                           tree_max_depth=10 #max tree depth etc max number of questions to ask
                           )
 3) run forest.test_model() to test your model
-###Optional
+Optional
 forest.print_forest() #print each decision tree in forest
 
 if you want to predict new examples with the same features without label
 run make_new_prediction(file_path,#path to file with data
                             forest #trained model
                             )
-##Add new data set
+Add new data set
 - add csv file to Data directory
 - edit config.ini file
 
-[dataSetName]
-path = ./Data/"dataSetName".csv
-label = #name of the feature to classify
-unnecessary_features = #features to drop from data set if there is no feature equal None
+    [dataSetName]
+    path = ./Data/"dataSetName".csv
+    label = #name of the feature to classify
+    unnecessary_features = #features to drop from data set if there is no feature equal None
 
-Example:
-[Titanic]
-path = ./Data/Titanic.csv
-label = Survived
-unnecessary_features = PassengerId, Name, Ticket, Cabin
+    Example:
+    [Titanic]
+    path = ./Data/Titanic.csv
+    label = Survived
+    unnecessary_features = PassengerId, Name, Ticket, Cabin
 
 ~~~
