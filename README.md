@@ -12,4 +12,8 @@ Alex Klushnikov, Benjamin Ahr
  ~~~
       pip install requirements.txt
 ~~~
-## הוראות הרצה
+## הוראות הרצה:
+~~~
+- הרץ את קובץ main.py
+
+~~~
