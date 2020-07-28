@@ -203,9 +203,8 @@ def make_predictions(df, tree):
     return predictions
 
 
-def calculate_accuracy(df, tree):
-    predictions = make_predictions(df, tree)
-    predictions_correct = predictions == df.label
+def calculate_accuracy(predictions, labels):
+    predictions_correct = predictions == labels
     accuracy = predictions_correct.mean()
     return accuracy
 

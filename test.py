@@ -2,7 +2,7 @@ import configparser
 import pandas as pd
 
 config = configparser.ConfigParser()
-
+config.read("config.ini")
 
 # config["Default"] = {'Data':'../Data/iris.csv', 'label': 'species', 'unnecessary_features': []}
 # config["Iris"] = {'Data':'../Data/iris.csv', 'label': 'species', 'unnecessary_features': []}
@@ -56,4 +56,6 @@ def determine_type_of_feature(df):
     return feature_types
 
 
-df = load_and_prepare_data("Titanic")
+df = pd.read_csv("predict.csv")
+df["Survived"] = 0
+print(df)
