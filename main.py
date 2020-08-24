@@ -27,7 +27,7 @@ def fail_example():
 
 def succsesful_example():
     forest = RandomForest("mushrooms",
-                          n_boostrap=50,
+                          n_boostrap=15,
                           n_features=10,
                           test_size=0.2,
                           n_trees=10,
@@ -54,8 +54,8 @@ def main():
     succsesful_example()
 
 
+
 if __name__ == "__main__":
     main()
-    print("test")
     #plot_hard_dataset()
 
