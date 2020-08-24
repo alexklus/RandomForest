@@ -21,7 +21,7 @@ def fail_example():
                           )
 
     forest.test_model()
-    # forest.print_forest()
+    forest.print_forest()
     print("Forest accuracy " + str(forest.accuracy * 100) + "%")
 
 
@@ -35,7 +35,7 @@ def succsesful_example():
                           )
 
     forest.test_model()
-    # forest.print_forest()
+    forest.print_forest()
     print("Forest accuracy " + str(forest.accuracy * 100) + "%")
 
 
@@ -56,5 +56,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    plot_hard_dataset()
+    #plot_hard_dataset()
 

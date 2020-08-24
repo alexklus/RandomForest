@@ -1,11 +1,11 @@
 from builtins import print
-
+from pprint import pprint
 import numpy as np
 import pandas as pd
 import configparser
 
 from DecisionTree.DecisionTree import decision_tree_algorithm, train_test_split, calculate_accuracy, \
-    decision_tree_predictions, make_predictions, print_tree
+    decision_tree_predictions, make_predictions
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -123,6 +123,5 @@ class RandomForest:
     def print_forest(self):
         i = 1
         for tree in self.forest:
-            print("Tree " + str(i))
-            i += 1
-            print_tree(tree, "")
+            pprint(tree)
+            print()
