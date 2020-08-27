@@ -22,12 +22,12 @@ def fail_example():
 
     forest.test_model()
     forest.print_forest()
-    print("Forest accuracy " + str(forest.accuracy * 100) + "%")
+    print("Unsuccessful forest accuracy " + str(forest.accuracy * 100) + "%")
 
 
-def succsesful_example():
+def successful_example():
     forest = RandomForest("mushrooms",
-                          n_boostrap=100,
+                          n_boostrap=50,
                           n_features=10,
                           test_size=0.2,
                           n_trees=10,
@@ -36,7 +36,7 @@ def succsesful_example():
 
     forest.test_model()
     forest.print_forest()
-    print("Forest accuracy " + str(forest.accuracy * 100) + "%")
+    print("Successful forest accuracy " + str(forest.accuracy * 100) + "%")
 
 
 def plot_hard_dataset():
@@ -51,11 +51,9 @@ def plot_hard_dataset():
 
 def main():
     fail_example()
-    succsesful_example()
-
+    successful_example()
 
 
 if __name__ == "__main__":
     main()
-    #plot_hard_dataset()
-
+    # plot_hard_dataset()
